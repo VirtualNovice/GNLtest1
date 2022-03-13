@@ -7,7 +7,7 @@
 #include <unistd.h>
 # define FD_MAX 256
 #include <string.h>
-#define buf_size 10
+#define buf_size 42
 
 
 void	ft_bzero(void *s, size_t n)
@@ -121,7 +121,7 @@ char *stash2(char *s, int size) // returning string until newline
 {
 	int a = 0;
 	int s_size = ft_strlen(s);
-	char *str = (char *)malloc(s_size * sizeof(char));
+	char *str = malloc(s_size * sizeof(char));
 	while(a < size)
 	{
 		str[a] = s[a];
@@ -138,68 +138,57 @@ char *get_next_line(int fd)
 	char *line = {0};
 	int chker;
 	char *stash3;
-	int size;
-    if (fd <= 0)
-		return (NULL);
-    if (!line)
-		return (NULL);
-	while (fd > 0)
+	size_t size;
+	while (size > 0)
 	{
-		if(stash == 0 || *stash == '\0') // stash is equal to 0 or '\0'
+		if(stash == 0 || *stash == '\0') 
 		{
-			read(fd, buf, buf_size); // will read fd size of buf_size and transfer to buf
-			stash = ft_strdup(buf); // copy the buf string to the static stash
+            size = read(fd, buf, buf_size);
+			stash = ft_strdup(buf); 
 		}
-		else//f stash is not zero just copy stash to line
+		else
 		{
-			line = ft_strdup(stash);// copy stash to line
-			free(stash);// free stash
+			line = ft_strdup(stash);
+			free(stash);
 		}
-		chker = newline_checker(stash); // check if there is a newline in the stash and the number of char including \n
-		stash3 = stash2(stash, chker); // transfering the string with \n 
-		if (chker > 0)// check if the stash have new line
+		chker = newline_checker(stash); 
+		stash3 = stash2(stash, chker);  
+		if (chker > 0)
 		{
-			// if there is new line
-			  stash = ft_strdup(stash + chker);// duplicates the remaining string after \n to static stash.
-			  if(line != 0) // check if line is empty or not
-				{
-					// if is not empty
-					line = ft_strjoin(line,stash3); // if it is not empty strjoin stash3 to line 
-					return (line); // returning line, end of call
+			stash = ft_strdup(stash + chker);
+			    if(line != 0)
+			    {
+				    line = ft_strjoin(line,stash3);
+					return (line);
 				}
 				else
 				{
-					// else if empty
-					line = ft_strdup(stash3);// duplicates the stash3 to line
-					return (line);// returning line, end of call
+					line = ft_strdup(stash3);
+					return (line);
 				}
 		}
 		else
 		{
-			//if there is no newline
 			  if(line != 0) // check if line is empty or not
 				{
-					// if is not empty
-					line = ft_strjoin(line,stash);// if it is not empty strjoin stash3 to line.
-					//free(stash);
-					stash = 0; // free stash..emptying stash and setting it to 0,preparation for the nxt buf 
+					line = ft_strjoin(line,stash);
+					stash = 0;
 				}
 				else
 				{
-					// else if empty
-					line = ft_strdup(stash); // duplicates the stash3 to line
-					//free(stash);
-					stash = 0;// free stash..emptying stash and setting it to 0,preparation for the nxt buf  
+					line = ft_strdup(stash);
+					stash = 0;
 				}	
 		}
 	}
-	return NULL;//end of call	
+	return NULL;
 }
 int main(int argc, char *argv[])
 {
         int fd;
         char *line;
 		int a = 0;
+		int size;
 
         line = malloc(1 *sizeof(char));
 
@@ -210,10 +199,11 @@ int main(int argc, char *argv[])
                 {
                         free(line);
                         line = get_next_line(fd);
-						int b = ft_strlen(line);
+						//size = ft_strlen(line);
                         if (line == NULL)
                                 exit(1);
-				printf("line size = %d , line number = %d %s",b,a,line);
+				size = ft_strlen(line);				
+				printf("line size = %d, line number = %d %s",size,a,line);
 				a++;
                 }
         }
